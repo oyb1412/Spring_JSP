@@ -2,6 +2,7 @@ package kr.co.myproject.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +47,27 @@ public class BoardService {
 	public Board findBoard(int idx)
 	{
 		return boardMapper.findBoard(idx);
+	}
+
+	public int plusBoardUpCount(int idx)
+	{
+		return boardMapper.plusBoardUpCount(idx);
+	}
+
+	public int plusBoardDownCount(int idx)
+	{
+		return boardMapper.plusBoardDownCount(idx);
+	}
+
+	public List<Board> searchBoardListPaged(@Param("searchType") String searchType,
+    @Param("keyword") String keyword,
+    @Param("start") int start,
+    @Param("pageSize") int pageSize)
+	{
+		return boardMapper.searchBoardListPaged(searchType, keyword, start, pageSize);
+	}
+
+	public int countBoardListByType(String searchType, String keyword) {
+    	return boardMapper.countBoardListByType(searchType, keyword);
 	}
 }

@@ -39,7 +39,7 @@
           <button type="submit" class="btn update" onclick="return confirm('정말 수정하시겠습니까?')">확인</button>
         </c:if>
 
-          <button type="button" class="btn cancel" onclick="location.href='${pageContext.request.contextPath}/'">취소</button>
+          <button type="button" class="btn cancel" onclick="location.href='${pageContext.request.contextPath}/board-list'">취소</button>
 
       </div>
     </div>
@@ -65,9 +65,3 @@
     });
   });
 </script>
-
-<c:if test="${not empty result}">
-  <script>
-    alert("${result}");
-  </script>
-</c:if>

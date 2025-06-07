@@ -18,4 +18,6 @@ public class Notice {
 	private String indate;
 	private int viewCount;
 	private int commentCount;
+	private int upCount;
+	private int downCount;
 }

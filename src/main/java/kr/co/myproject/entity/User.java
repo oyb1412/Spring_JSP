@@ -1,6 +1,14 @@
 package kr.co.myproject.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 	
 	private int idx;
@@ -8,47 +16,5 @@ public class User {
 	private String password;
 	private String writer;
 	private Role role;
-	
-
-
-	public int getIdx() {
-		return idx;
-	}
-
-	public void setIdx(int idx) {
-		this.idx = idx;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getWriter() {
-		return writer;
-	}
-
-	public void setWriter(String writer) {
-		this.writer = writer;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
-	
+	private boolean ban;
 }

@@ -33,6 +33,29 @@
 		<label for="viewCount">조회수</label>
 		<input type="text" id="viewCount" name="viewCount" value="${board.viewCount}" readonly>
 
+<div id="vote-section">
+  <form action="${pageContext.request.contextPath}/board-vote" method="post" style="display: inline;">
+    <input type="hidden" name="idx" value="${board.idx}" />
+    <input type="hidden" name="voteType" value="up" />
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+    <button type="submit" class="vote-btn up">★<br>좋아요</button>
+  </form>
+  <span class="vote-count">${board.upCount}</span>
+
+  <form action="${pageContext.request.contextPath}/board-vote" method="post" style="display: inline;">
+    <input type="hidden" name="idx" value="${board.idx}" />
+    <input type="hidden" name="voteType" value="down" />
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+    <button type="submit" class="vote-btn down">⬇<br>싫어요</button>
+  </form>
+  <span class="vote-count">${board.downCount}</span>
+
+  <c:if test="${isAuthenticated}">
+  <button type="button" class="btn report-btn"
+          onclick="openReportPopup('${board.idx}' , '${board.userIdx}', '${board.writer}', '${board.title}')">🚨<br>신고</button>
+</c:if>
+</div>
+
 		<div id="buttonContainer">
 			<c:if test="${MANAGER == true || ADMIN == true || board.memID == username}">
 				<form action="${pageContext.request.contextPath}/board-modify-page" method="get">
@@ -112,8 +135,13 @@
 
 <%@ include file="/WEB-INF/views/common/footer.jsp" %>
 
-<c:if test="${not empty result}">
-  <script>
-    alert("${result}");
-  </script>
-</c:if>
+<script>
+function openReportPopup(boardIdx, reportedUserIdx, writer, title) {
+    const url = '/board-report-page?boardIdx=' + encodeURIComponent(boardIdx)
+              + '&reportedUserIdx=' + encodeURIComponent(reportedUserIdx)
+              + '&writer=' + encodeURIComponent(writer)
+              + '&title=' + encodeURIComponent(title);
+
+    window.open(url, 'reportWindow', 'width=500,height=400,resizable=no');
+}
+</script>

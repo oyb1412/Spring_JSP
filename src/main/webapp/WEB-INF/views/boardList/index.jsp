@@ -38,20 +38,35 @@
     </tbody>
   </table>
 
+<div id="searchBox">
+  <form action="${pageContext.request.contextPath}/board-list-page" method="get" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px;">
+    <select name="searchType">
+      <option value="title" ${param.searchType == 'title' ? 'selected' : ''}>제목</option>
+      <option value="content" ${param.searchType == 'content' ? 'selected' : ''}>내용</option>
+      <option value="writer" ${param.searchType == 'writer' ? 'selected' : ''}>글쓴이</option>
+      <option value="title_content" ${param.searchType == 'title_content' ? 'selected' : ''}>제목+내용</option>
+    </select>
+    <input type="text" name="keyword" value="${param.keyword}" placeholder="검색어를 입력하세요" />
+    <button type="submit">🔍</button>
+  </form>
+</div>
+
+
   <div class="pagination">
 
   <c:if test="${currentBoardPage > 1}">
-    <a href="${pageContext.request.contextPath}/board-list?page=${currentBoardPage - 1}">이전</a>
+    <a href="${pageContext.request.contextPath}/board-list-page?page=${currentBoardPage - 1}&searchType=${param.searchType}&keyword=${param.keyword}">이전</a>
   </c:if>
 
   <c:forEach begin="1" end="${totalBoardPage}" var="i">
-    <a href="${pageContext.request.contextPath}/board-list?page=${i}" style="${i == currentBoardPage ? 'font-weight: bold;' : ''}">${i}</a>
+    <a href="${pageContext.request.contextPath}/board-list-page?page=${i}&searchType=${param.searchType}&keyword=${param.keyword}"
+       style="${i == currentBoardPage ? 'font-weight: bold;' : ''}">${i}</a>
   </c:forEach>
 
   <c:if test="${currentBoardPage < totalBoardPage}">
-    <a href="${pageContext.request.contextPath}/board-list?page=${currentBoardPage + 1}">다음</a>
+    <a href="${pageContext.request.contextPath}/board-list-page?page=${currentBoardPage + 1}&searchType=${param.searchType}&keyword=${param.keyword}">다음</a>
   </c:if>
-  </div>
+
 </div>
 
 <%@ include file="../common/footer.jsp" %>

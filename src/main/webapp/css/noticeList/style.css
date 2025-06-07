@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Gugi&display=swap');
+
 
 * {
   margin: 0;
@@ -77,4 +77,23 @@ table {
 table th, table td {
   padding: 8px;
   border: 1px solid #ddd;
+}
+
+#searchBox select,
+#searchBox input[type="text"],
+#searchBox button {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+#searchBox button {
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+}
+
+#searchBox button:hover {
+  background-color: #555;
 }

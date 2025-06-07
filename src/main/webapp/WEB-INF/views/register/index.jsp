@@ -38,9 +38,3 @@
   </div>
 </div>
 
-<%@ include file="/WEB-INF/views/common/footer.jsp" %>
-<c:if test="${not empty result}">
-  <script>
-    alert("${result}");
-  </script>
-</c:if>

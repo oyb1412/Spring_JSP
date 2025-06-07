@@ -54,8 +54,3 @@
   });
 </script>
 
-<c:if test="${not empty result}">
-  <script>
-    alert("${result}");
-  </script>
-</c:if>

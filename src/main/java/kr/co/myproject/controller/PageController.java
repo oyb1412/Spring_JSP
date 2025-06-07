@@ -22,6 +22,7 @@ import kr.co.myproject.service.BoardService;
 import kr.co.myproject.service.CommentService;
 import kr.co.myproject.service.NoticeService;
 import kr.co.myproject.service.UserService;
+import kr.co.myproject.service.BoardReportService;
 
 
 @Controller
@@ -38,33 +39,77 @@ public class PageController {
 
 	@Autowired
 	private NoticeService noticeService;
+
+	@Autowired 
+	private BoardReportService boardReportService;
 	
 	@GetMapping("/board-list-page")
-	public String boardList(@RequestParam(defaultValue = "1") int page, Model model)
+	public String boardList(@RequestParam(defaultValue = "1") int page, 
+							@RequestParam(required = false) String searchType, 
+							@RequestParam(required = false) String keyword,
+							Model model)
 	{
 		int pageSize = 10;
 		int start = (page -1) * pageSize;
-		int totalCount = boardService.getList().size();
-		int totalPage = (int)Math.ceil((double)totalCount / pageSize);
-		List<Board> boardList = boardService.getPagedList(start, pageSize);
-		model.addAttribute("boardList", boardList);
-		model.addAttribute("currentBoardPage", page);
-		model.addAttribute("totalBoardPage", totalPage);
-		return "boardList/index";
+		List<Board> boardList;
+		int totalCount;
+
+		if (keyword == null || keyword.trim().isEmpty()) {
+    		keyword = null; 
+    		searchType = null; 
+		}
+
+    	if (searchType != null && keyword != null && !keyword.trim().isEmpty()) {
+			boardList = boardService.searchBoardListPaged(searchType, keyword, start, pageSize);
+			totalCount = boardService.countBoardListByType(searchType, keyword); 
+		} else {
+			boardList = boardService.getPagedList(start, pageSize);
+			totalCount = boardService.getList().size();
+		}
+
+    	int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+
+    	model.addAttribute("boardList", boardList);
+    	model.addAttribute("currentBoardPage", page);
+    	model.addAttribute("totalBoardPage", totalPage);
+    	model.addAttribute("searchType", searchType);
+    	model.addAttribute("keyword", keyword);
+
+    	return "boardList/index";
 	}
 
 	@GetMapping("/")
-	public String noticeList(@RequestParam(defaultValue = "1") int page, Model model)
+	public String noticeList(@RequestParam(defaultValue = "1") int page, 
+							@RequestParam(required = false) String searchType, 
+							@RequestParam(required = false) String keyword,
+							Model model)
 	{
 		int pageSize = 10;
 		int start = (page -1) * pageSize;
+		List<Notice> noticeList;
+		int totalCount;
 
-		int totalCount = noticeService.getList().size();
-		int totalPage = (int)Math.ceil((double)totalCount / pageSize);
-		List<Notice> noticeList = noticeService.getPagedList(start, pageSize);
+		if (keyword == null || keyword.trim().isEmpty()) {
+    		keyword = null; 
+    		searchType = null; 
+		}
+
+    	if (searchType != null && keyword != null && !keyword.trim().isEmpty()) {
+			noticeList = noticeService.searchNoticeListPaged(searchType, keyword, start, pageSize);
+			totalCount = noticeService.countNoticeListByType(searchType, keyword); 
+		} else {
+			noticeList = noticeService.getPagedList(start, pageSize);
+			totalCount = noticeService.getList().size();
+		}
+
+    	int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+
+
 		model.addAttribute("noticeList", noticeList);
 		model.addAttribute("currentNoticePage", page);
 		model.addAttribute("totalNoticePage", totalPage);
+		model.addAttribute("searchType", searchType);
+    	model.addAttribute("keyword", keyword);
 
 		return "noticeList/index";
 	}
@@ -80,11 +125,17 @@ public class PageController {
 	{
 		return "register/index";
 	}
+
+	@GetMapping("/dummy")
+	public String getMethodName() {
+		return "dummy/index";
+	}
+	
 	
 	@GetMapping("/board-add-page")
 	public String boardAddPage(Model model, Authentication authentication, RedirectAttributes redirectAttributes)
 	{
-		if(authentication.getName() == null || authentication.getName().isEmpty())
+		if(authentication == null || !authentication.isAuthenticated())
 		{
 			redirectAttributes.addFlashAttribute("result", "먼저 로그인을 진행해주세요");
         	return "redirect:/board-list-page";
@@ -226,5 +277,44 @@ public class PageController {
 	@GetMapping("/find-password-page")
 	public String findPasswordPage() {
 		return "findPassword/index";
+	}
+
+	@GetMapping("/board-report-page")
+	public String getMethodName(@RequestParam int boardIdx, 
+								@RequestParam int reportedUserIdx,
+								@RequestParam String writer,
+								@RequestParam String title,
+								Authentication authentication, 
+								RedirectAttributes redirectAttributes, 
+								Model model) {
+		User user = userService.findByUsername(authentication.getName());
+
+		int userIdx = user.getIdx();
+		
+		//에러
+		if(userIdx == 0)
+		{
+			redirectAttributes.addFlashAttribute("alreadyReported", true);
+        	return "redirect:/dummy";
+		}
+
+		int reportCount = boardReportService.findBoardReportCount(userIdx, boardIdx);
+
+		//이미 신고한 글
+		if(reportCount != 0)
+		{
+			redirectAttributes.addFlashAttribute("alreadyReported", true);
+        	return "redirect:/dummy";
+		}
+		
+		model.addAttribute("alreadyReported", false);
+		model.addAttribute("boardIdx", boardIdx);
+		model.addAttribute("reportedUserIdx", reportedUserIdx);
+		model.addAttribute("userIdx", userIdx);
+		model.addAttribute("writer", writer);
+		model.addAttribute("title", title);
+		model.addAttribute("myWriter", user.getWriter());
+		return "boardReport/index";
+		
 	}
 }

@@ -46,4 +46,9 @@ public class UserService {
 	{
 		return userMapper.UpdatePassword(user);
 	}
+
+	public int UpdateBan(boolean ban, int idx)
+	{
+		return userMapper.UpdateBan(ban, idx);
+	}
 }

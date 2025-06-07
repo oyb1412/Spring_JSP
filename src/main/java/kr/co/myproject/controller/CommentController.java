@@ -33,6 +33,13 @@ public class CommentController {
             redirectAttributes.addFlashAttribute("result", "댓글 정보가 올바르지 않습니다");
         	return Util.PageRefresh(request);
         }
+
+        if(comment.getContent() == null || comment.getContent().isEmpty())
+        {
+            redirectAttributes.addFlashAttribute("result", "내용을 입력해 주세요");
+        	return Util.PageRefresh(request);
+        }
+        
         String username = principal.getName();
 
         if(username == null || username.isEmpty())
@@ -66,6 +73,7 @@ public class CommentController {
         }
 
 
+        redirectAttributes.addFlashAttribute("result", "코멘트 추가에 성공했습니다");
         return Util.PageRefresh(request);
     }
 
@@ -84,6 +92,9 @@ public class CommentController {
             redirectAttributes.addFlashAttribute("result", "코멘트 삭제에 실패했습니다");
         	return Util.PageRefresh(request);
         }
+
+        
+        redirectAttributes.addFlashAttribute("result", "코멘트 삭제에 성공했습니다");
         return Util.PageRefresh(request);
     }
     

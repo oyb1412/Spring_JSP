@@ -6,7 +6,6 @@ import jakarta.servlet.DispatcherType;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,21 +33,18 @@ public class SecutiryConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 		 http
 		 
-		 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedPage("/login-page")) // 403번대 에러는 자동으로 페이지 이동
+		 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedPage("/error/403")) 
 		 .authorizeHttpRequests(authz -> authz
 				 .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR, DispatcherType.REQUEST).permitAll()
 				 .requestMatchers("/css/**", "/js/**", "find-password-page", "find-password").permitAll()
 				 .requestMatchers("/WEB-INF/views/**").denyAll()
-				 .requestMatchers("/", "/login-page", "/register-page", "/board-check-page/**", "/board-list-page").permitAll()
-				 .requestMatchers( "/login", "/register").permitAll()
+				 .requestMatchers("/", "/login-page", "/register-page", "/board-check-page/**", "/board-list-page","/login", "/register").permitAll()
 				 .requestMatchers("/logout").hasAnyAuthority("ADMIN","MANAGER","MEMBER")
 				 .requestMatchers("/notice-check-page/**").hasAnyAuthority("ADMIN","MANAGER","MEMBER")
-				 .requestMatchers("/notice-add-page", "/notice-modify-page/**").hasAnyAuthority("ADMIN","MANAGER")
+				 .requestMatchers("/notice-add-page", "/notice-modify-page/**", "/notice-add" , "/notice-delete", "/notice-modify").hasAnyAuthority("ADMIN","MANAGER")
 
-				 .requestMatchers(HttpMethod.GET, "/my-page").hasAnyAuthority("ADMIN","MANAGER","MEMBER")
-				 .requestMatchers(HttpMethod.GET, "/board-add-page").hasAnyAuthority("ADMIN","MANAGER","MEMBER")
-				 .requestMatchers(HttpMethod.GET, "/board-modify-page/**").hasAnyAuthority("ADMIN","MANAGER")
-				 .requestMatchers(HttpMethod.POST, "/board-add", "/board-modify", "/board-delete", "/comment-add").hasAnyAuthority("ADMIN","MANAGER")
+				 .requestMatchers("/my-page", "/board-add-page", "/board-modify-page/**", "/board-vote", "/notice-vote", "/board-report-page", "/board-report").hasAnyAuthority("ADMIN","MANAGER","MEMBER")
+				 .requestMatchers("/board-add", "/board-modify", "/board-delete", "/comment-add", "/comment-delete").hasAnyAuthority("ADMIN","MANAGER","MEMBER")
 
 				 .anyRequest().authenticated())
 		 .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))

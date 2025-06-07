@@ -33,6 +33,24 @@
 		<label for="viewCount">조회수</label>
 		<input type="text" id="viewCount" name="viewCount" value="${notice.viewCount}" readonly>
 
+<div id="vote-section">
+  <form action="${pageContext.request.contextPath}/notice-vote" method="post" style="display: inline;">
+    <input type="hidden" name="idx" value="${notice.idx}" />
+    <input type="hidden" name="voteType" value="up" />
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+    <button type="submit" class="vote-btn up">★<br>좋아요</button>
+  </form>
+  <span class="vote-count">${notice.upCount}</span>
+
+  <form action="${pageContext.request.contextPath}/notice-vote" method="post" style="display: inline;">
+    <input type="hidden" name="idx" value="${notice.idx}" />
+    <input type="hidden" name="voteType" value="down" />
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+    <button type="submit" class="vote-btn down">⬇<br>싫어요</button>
+  </form>
+  <span class="vote-count">${notice.downCount}</span>
+</div>
+
 		<div id="buttonContainer">
 			<c:if test="${MANAGER == true || ADMIN == true || notice.memID == username}">
 				<form action="${pageContext.request.contextPath}/notice-modify-page" method="get">
@@ -113,8 +131,3 @@
 
 <%@ include file="/WEB-INF/views/common/footer.jsp" %>
 
-<c:if test="${not empty result}">
-  <script>
-    alert("${result}");
-  </script>
-</c:if>

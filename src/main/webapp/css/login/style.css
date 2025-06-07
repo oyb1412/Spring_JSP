@@ -1,11 +1,20 @@
 /* css/login/style.css */
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Malgun Gothic', sans-serif;
+  background-color: #f0f2f5;
+}
+
+/* 전체 레이아웃 */
 #main-content {
-  margin-left: 0px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 100px); /* 헤더+푸터 여백 고려 */
+  margin-left: 800px; /* ← 사이드바 공간 확보 */
+  padding: 40px 20px;
 }
 
 #login-container {
