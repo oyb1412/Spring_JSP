@@ -1,4 +1,7 @@
 package kr.co.myproject.controller;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -37,7 +41,11 @@ public class UserController {
         	return "redirect:/register-page";
     	}
 
+		LocalDateTime now = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    	String formattedNow = now.format(formatter);
 
+		user.setIndate(formattedNow);
 		String userPassword = user.getPassword();
 		user.setRole(Role.MEMBER);
 		String passwordEncoded = passwordEncoder.encode(userPassword);
@@ -149,4 +157,45 @@ public class UserController {
 
 		 return "redirect:/find-password-page"; 
 	}
+
+	@PostMapping("/admin-ban")
+	public String adminBan(@RequestParam int userIdx,
+						   @RequestParam boolean ban,
+						   RedirectAttributes redirectAttributes) {
+		User user = userService.findByIdx(userIdx);
+
+		if(user.isBan() == ban)
+		{
+			if(ban)
+			{
+				redirectAttributes.addFlashAttribute("result", "이미 정지당한 유저입니다");
+				return "redirect:/admin-page";
+			}
+			else
+			{
+				redirectAttributes.addFlashAttribute("result", "정지당하지 않은 유저입니다");
+				return "redirect:/admin-page";
+			}
+		}
+
+		int queryCount = userService.UpdateBan(ban, userIdx);
+
+		if(queryCount == 0)
+		{
+			redirectAttributes.addFlashAttribute("result", "유저 정보가 올바르지 않습니다");
+			return "redirect:/admin-page";
+		}
+
+		if(ban)
+		{
+			redirectAttributes.addFlashAttribute("result", "해당 유저를 정지시켰습니다");
+		}
+		else
+		{
+			redirectAttributes.addFlashAttribute("result", "해당 유저의 정지를 해제했습니다");
+		}
+							
+		return "redirect:/admin-page";
+	}
+	
 }

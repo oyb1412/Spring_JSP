@@ -6,6 +6,7 @@ import jakarta.servlet.DispatcherType;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -36,7 +37,7 @@ public class SecutiryConfig {
 		 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedPage("/error/403")) 
 		 .authorizeHttpRequests(authz -> authz
 				 .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR, DispatcherType.REQUEST).permitAll()
-				 .requestMatchers("/css/**", "/js/**", "find-password-page", "find-password").permitAll()
+				 .requestMatchers("/css/**", "/js/**", "/find-password-page", "/find-password").permitAll()
 				 .requestMatchers("/WEB-INF/views/**").denyAll()
 				 .requestMatchers("/", "/login-page", "/register-page", "/board-check-page/**", "/board-list-page","/login", "/register").permitAll()
 				 .requestMatchers("/logout").hasAnyAuthority("ADMIN","MANAGER","MEMBER")
@@ -45,7 +46,7 @@ public class SecutiryConfig {
 
 				 .requestMatchers("/my-page", "/board-add-page", "/board-modify-page/**", "/board-vote", "/notice-vote", "/board-report-page", "/board-report").hasAnyAuthority("ADMIN","MANAGER","MEMBER")
 				 .requestMatchers("/board-add", "/board-modify", "/board-delete", "/comment-add", "/comment-delete").hasAnyAuthority("ADMIN","MANAGER","MEMBER")
-
+				 .requestMatchers("/admin-page", "/admin-ban").hasAnyAuthority("ADMIN")
 				 .anyRequest().authenticated())
 		 .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
 		 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -53,7 +54,13 @@ public class SecutiryConfig {
 		 .formLogin(login -> login
 		 .loginPage("/login-page")
 		 .loginProcessingUrl("/login")
-		 .failureUrl("/login-page?error=true")
+		 .failureHandler((request, response, exception) -> {
+    if (exception instanceof DisabledException) {
+        response.sendRedirect("/login-page?error=ban");
+    } else {
+        response.sendRedirect("/login-page?error=true");
+    }
+})
 		 .usernameParameter("username")
 		 .passwordParameter("password")
 		 .successHandler(authenticationSuccessHandler())

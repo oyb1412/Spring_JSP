@@ -1,5 +1,7 @@
 package kr.co.myproject.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +23,20 @@ public class UserService {
 	{
 		return userMapper.findByUsername(username);
 	}
+
+	public User findByIdx(int idx)
+	{
+		return userMapper.findByIdx(idx);
+	}
 	
 	public String findWriter(String username)
 	{
 		return userMapper.findWriter(username);
+	}
+
+	public List<User> findAllUser()
+	{
+		return userMapper.findAllUser();
 	}
 
 	public int countByUsername(String username)

@@ -8,6 +8,9 @@
         <p style="text-align:center; font-size: 15px; margin-bottom: 10px;">${username}님</p>
         <a href="${pageContext.request.contextPath}/logout" class="sidebar-btn">로그아웃</a>
         <a href="${pageContext.request.contextPath}/my-page" class="sidebar-btn">마이페이지</a>
+        <c:if test="${ADMIN}">
+           <a href="${pageContext.request.contextPath}/admin-page" class="sidebar-btn">유저 관리</a>
+        </c:if>
       </c:when>
       <c:otherwise>
         <a href="${pageContext.request.contextPath}/login-page" class="sidebar-btn">로그인</a>

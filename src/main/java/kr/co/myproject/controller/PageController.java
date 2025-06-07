@@ -280,7 +280,7 @@ public class PageController {
 	}
 
 	@GetMapping("/board-report-page")
-	public String getMethodName(@RequestParam int boardIdx, 
+	public String reportPage(@RequestParam int boardIdx, 
 								@RequestParam int reportedUserIdx,
 								@RequestParam String writer,
 								@RequestParam String title,
@@ -315,6 +315,13 @@ public class PageController {
 		model.addAttribute("title", title);
 		model.addAttribute("myWriter", user.getWriter());
 		return "boardReport/index";
-		
 	}
+
+	@GetMapping("/admin-page")
+	public String adminPage(Model model) {
+		List<User> allUser = userService.findAllUser();
+		model.addAttribute("userList", allUser);
+		return "admin/index";
+	}
+	
 }

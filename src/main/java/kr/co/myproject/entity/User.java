@@ -17,4 +17,5 @@ public class User {
 	private String writer;
 	private Role role;
 	private boolean ban;
+	private String indate;
 }

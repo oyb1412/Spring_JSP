@@ -24,6 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		{
 			throw new UsernameNotFoundException(username +"존재하지 않습니다");
 		}
+
 		return new CustomUser(user);
 	}
 
