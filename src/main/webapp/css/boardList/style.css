@@ -95,3 +95,24 @@ table th, table td {
 #searchBox button:hover {
   background-color: #555;
 }
+
+#sort-options {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.sort-btn {
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sort-btn:hover {
+  background-color: #ddd;
+}

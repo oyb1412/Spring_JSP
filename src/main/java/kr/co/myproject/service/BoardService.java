@@ -28,6 +28,21 @@ public class BoardService {
 	{
 		return boardMapper.getList();
 	}
+
+	public List<Board> getBoardListDescViewCount()
+	{
+		return boardMapper.getBoardListDescViewCount();
+	}
+
+	public List<Board> getBoardListDescCommentCount()
+	{
+		return boardMapper.getBoardListDescCommentCount();
+	}
+
+	public List<Board> getBoardListIndate()
+	{
+		return boardMapper.getBoardListIndate();
+	}
 	
 	public int boardUpdate(Board board)
 	{
@@ -60,11 +75,27 @@ public class BoardService {
 	}
 
 	public List<Board> searchBoardListPaged(@Param("searchType") String searchType,
-    @Param("keyword") String keyword,
-    @Param("start") int start,
-    @Param("pageSize") int pageSize)
+    @Param("keyword") String keyword)
 	{
-		return boardMapper.searchBoardListPaged(searchType, keyword, start, pageSize);
+		return boardMapper.searchBoardListPaged(searchType, keyword);
+	}
+
+	public List<Board> searchBoardListPagedDescViewCount(@Param("searchType") String searchType,
+    @Param("keyword") String keyword)
+	{
+		return boardMapper.searchBoardListPagedDescViewCount(searchType, keyword);
+	}
+
+	public List<Board> searchBoardListPagedDescCommentCount(@Param("searchType") String searchType,
+    @Param("keyword") String keyword)
+	{
+		return boardMapper.searchBoardListPagedDescCommentCount(searchType, keyword);
+	}
+
+	public List<Board> searchBoardListPagedDescIndate(@Param("searchType") String searchType,
+    @Param("keyword") String keyword)
+	{
+		return boardMapper.searchBoardListPagedDescIndate(searchType, keyword);
 	}
 
 	public int countBoardListByType(String searchType, String keyword) {

@@ -3,6 +3,8 @@ package kr.co.myproject.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,8 @@ import kr.co.myproject.service.CommentService;
 import kr.co.myproject.service.NoticeService;
 import kr.co.myproject.service.UserService;
 import kr.co.myproject.service.BoardReportService;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 public class PageController {
@@ -42,33 +45,90 @@ public class PageController {
 
 	@Autowired 
 	private BoardReportService boardReportService;
+
+	private final Logger logger = LoggerFactory.getLogger(PageController.class);
+
 	
 	@GetMapping("/board-list-page")
-	public String boardList(@RequestParam(defaultValue = "1") int page, 
-							@RequestParam(required = false) String searchType, 
+	public String boardList(@RequestParam(defaultValue = "1") int page,
+							@RequestParam(required = false) String searchType,
 							@RequestParam(required = false) String keyword,
-							Model model)
+							@RequestParam(required = false) String sortField,
+							@RequestParam(required = false) String sortOrder,
+							Model model,
+							RedirectAttributes redirectAttributes)
 	{
 		int pageSize = 10;
-		int start = (page -1) * pageSize;
-		List<Board> boardList;
-		int totalCount;
+		List<Board> boardList = new ArrayList<>();
+		int totalCount = 0;
 
 		if (keyword == null || keyword.trim().isEmpty()) {
     		keyword = null; 
     		searchType = null; 
 		}
-
-    	if (searchType != null && keyword != null && !keyword.trim().isEmpty()) {
-			boardList = boardService.searchBoardListPaged(searchType, keyword, start, pageSize);
-			totalCount = boardService.countBoardListByType(searchType, keyword); 
-		} else {
-			boardList = boardService.getPagedList(start, pageSize);
-			totalCount = boardService.getList().size();
+		
+		//1.검색만 있는 경우
+		if ((searchType != null && keyword != null && !keyword.trim().isEmpty())
+		&& (sortField == null || sortField.trim().isEmpty() || "default".equals(sortField))) {
+			boardList = boardService.searchBoardListPaged(searchType, keyword);
+		}
+		//2.정렬만 있는 경우
+		if((searchType == null || keyword == null || keyword.trim().isEmpty())
+		&& sortField != null && !sortField.trim().isEmpty() && !"default".equals(sortField))
+		{
+			switch (sortField) {
+				case "view":
+					boardList = boardService.getBoardListDescViewCount();
+					break;
+				case "comment":
+					boardList = boardService.getBoardListDescCommentCount();
+					break;
+				case "date":
+					boardList = boardService.getBoardListIndate();
+					break;
+			}
+			if("desc".equals(sortOrder))
+			{
+				Collections.reverse(boardList);
+			}
 		}
 
-    	int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+		//3.검색, 정렬 모두 해야하는 경우
+		if((searchType != null && keyword != null && !keyword.trim().isEmpty()) 
+		&& sortField != null && !sortField.trim().isEmpty() && !"default".equals(sortField))
+		{
+			switch (sortField) {
+				case "view":
+					boardList = boardService.searchBoardListPagedDescViewCount(searchType, keyword);
+					break;
+				case "comment":
+					boardList = boardService.searchBoardListPagedDescCommentCount(searchType, keyword);
+					break;
+				case "date":
+					boardList = boardService.searchBoardListPagedDescIndate(searchType, keyword);
+					break;
+			}
+			if("desc".equals(sortOrder))
+			{
+				Collections.reverse(boardList);
+			}
 
+		}
+
+		//4.검색, 정렬 아무것도 하지 않는 경우
+		if((searchType == null || keyword == null || keyword.trim().isEmpty()) 
+		&& (sortField == null || sortField.trim().isEmpty() || "default".equals(sortField)))
+		{
+			boardList = boardService.getList();
+		}
+			
+		totalCount = boardList.size();
+		int startIndex = (page - 1) * pageSize;
+		int endIndex = Math.min(startIndex + pageSize, boardList.size());
+		boardList = boardList.subList(startIndex, endIndex);
+
+    	int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+		logger.info("totalPage : "+ totalPage);
     	model.addAttribute("boardList", boardList);
     	model.addAttribute("currentBoardPage", page);
     	model.addAttribute("totalBoardPage", totalPage);
