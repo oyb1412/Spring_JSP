@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 
 
@@ -47,6 +49,8 @@ public class BoardController {
 
     @Autowired
     private BoardReportedService boardReportedService;
+
+
 
     @PostMapping("/board-add")
     public String BoardAdd(@ModelAttribute Board board,  RedirectAttributes redirectAttributes,Authentication authentication) {

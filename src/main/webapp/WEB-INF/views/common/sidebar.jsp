@@ -23,6 +23,8 @@
   <div id="menu-box">
     <a href="${pageContext.request.contextPath}/">공지사항</a>
     <a href="${pageContext.request.contextPath}/board-list-page">자유게시판</a>
+    <a href="${pageContext.request.contextPath}/resume-board-check-page" class="resume">📄이력서</a>
+    <a href="${pageContext.request.contextPath}/projects-board-list-page" class="projects">💻프로젝트</a>
   </div>
 </div>
 

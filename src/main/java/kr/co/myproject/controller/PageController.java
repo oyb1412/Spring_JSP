@@ -55,8 +55,7 @@ public class PageController {
 							@RequestParam(required = false) String keyword,
 							@RequestParam(required = false) String sortField,
 							@RequestParam(required = false) String sortOrder,
-							Model model,
-							RedirectAttributes redirectAttributes)
+							Model model)
 	{
 		int pageSize = 10;
 		List<Board> boardList = new ArrayList<>();

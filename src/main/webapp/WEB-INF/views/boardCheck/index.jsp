@@ -12,9 +12,6 @@
 	<div id="boardAdmin">
 		<h2 id="boardAdminH2">글 조회</h2>
 
-		<label for="memID">회원아이디</label>
-		<input type="text" id="memID" name="memID" value="${board.memID}" readonly>
-
 		<label for="title">제목</label>
 		<input type="text" id="title" name="title" value="${board.title}" readonly>
 

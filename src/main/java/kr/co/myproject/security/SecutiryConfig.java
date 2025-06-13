@@ -37,7 +37,7 @@ public class SecutiryConfig {
 		 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedPage("/error/403")) 
 		 .authorizeHttpRequests(authz -> authz
 				 .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR, DispatcherType.REQUEST).permitAll()
-				 .requestMatchers("/css/**", "/js/**", "/find-password-page", "/find-password").permitAll()
+				 .requestMatchers("/css/**", "/js/**", "/find-password-page", "/find-password", "/resume-board-check-page", "/projects-board-list-page", "/projects-board-check-page").permitAll()
 				 .requestMatchers("/WEB-INF/views/**").denyAll()
 				 .requestMatchers("/", "/login-page", "/register-page", "/board-check-page/**", "/board-list-page","/login", "/register").permitAll()
 				 .requestMatchers("/logout").hasAnyAuthority("ADMIN","MANAGER","MEMBER")
@@ -46,7 +46,7 @@ public class SecutiryConfig {
 
 				 .requestMatchers("/my-page", "/board-add-page", "/board-modify-page/**", "/board-vote", "/notice-vote", "/board-report-page", "/board-report").hasAnyAuthority("ADMIN","MANAGER","MEMBER")
 				 .requestMatchers("/board-add", "/board-modify", "/board-delete", "/comment-add", "/comment-delete").hasAnyAuthority("ADMIN","MANAGER","MEMBER")
-				 .requestMatchers("/admin-page", "/admin-ban").hasAnyAuthority("ADMIN")
+				 .requestMatchers("/admin-page", "/admin-ban", "/dummy-board-add", "/dummy-board-add-page", "/projects-board-add-page", "/projects-board-add").hasAnyAuthority("ADMIN")
 				 .anyRequest().authenticated())
 		 .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
 		 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

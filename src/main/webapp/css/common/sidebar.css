@@ -93,3 +93,14 @@
 #menu-box a:hover {
   background-color: #e0e0e0;
 }
+
+#menu-box a.resume,
+#menu-box a.projects {
+  margin-left: 15px;
+  background-color: #ffcc00;
+  color: black;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 5px;
+  display: inline-block;
+}
