@@ -33,3 +33,20 @@
     alert("${result}");
   </script>
 </c:if>
+
+<c:if test="${param.error == 'true'}">
+    <script>
+    alert("아이디 혹은 비밀번호가 올바르지 않습니다");
+  </script>
+    </c:if>
+
+    <c:if test="${param.error == 'ban'}">
+    <script>
+    alert("운영자에게 정지당한 계정입니다");
+  </script>
+    </c:if>
+	<c:if test="${not empty error}">
+   <script>
+    alert(`${error}`);
+  </script>
+	</c:if>

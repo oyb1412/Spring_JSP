@@ -20,7 +20,7 @@ public interface NoticeMapper {
 	public List<Notice> getList();
 
 	@Select("SELECT idx, memID, title, content, writer, indate, viewCount, commentCount FROM springboot_project_study.notice ORDER BY idx DESC LIMIT #{start}, #{pageSize}")
-	public List<Notice> getPagedList(int start, int pageSize);
+	public List<Notice> getPagedList(@Param("start") int start, @Param("pageSize") int pageSize);
 	
 	@Select("SELECT idx, memID, title, content, writer, indate, viewCount, commentCount, upCount, downCount FROM springboot_project_study.notice WHERE idx=#{idx}")
 	public Notice findNotice(int idx);
@@ -33,6 +33,9 @@ public interface NoticeMapper {
 
 	@Update("UPDATE springboot_project_study.notice SET commentCount = commentCount + 1 WHERE idx=#{idx}")
 	public int plusNoticeCommentCount(int idx);
+
+	@Update("UPDATE springboot_project_study.notice SET commentCount = commentCount - 1 WHERE idx=#{idx}")
+	public int downNoticeCommentCount(int idx);
 
 	@Update("UPDATE springboot_project_study.notice SET upCount = upCount + 1 WHERE idx=#{idx}")
 	public int plusNoticeUpCount(int idx);

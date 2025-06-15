@@ -5,7 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
-import kr.co.myproject.entity.BoardVote;
+import kr.co.myproject.Util.Util;
 import kr.co.myproject.entity.Notice;
 import kr.co.myproject.entity.NoticeVote;
 import kr.co.myproject.service.NoticeService;
@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 
 
@@ -31,11 +33,13 @@ public class NoticeController {
     private NoticeVoteService noticeVoteService;
 
     @PostMapping("/notice-add")
-    public String NoticeAdd(@ModelAttribute Notice notice, RedirectAttributes redirectAttributes) {
+    public String NoticeAdd(@ModelAttribute Notice notice, 
+                            RedirectAttributes redirectAttributes,
+                            HttpServletRequest httpServletRequest) {
         if(notice == null)
         {
             redirectAttributes.addFlashAttribute("result", "글 정보가 올바르지 않습니다");
-        	return "redirect:/";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
 
         int queryCount = noticeService.noticeInsert(notice);
@@ -43,19 +47,21 @@ public class NoticeController {
         if(queryCount == 0)
         {
             redirectAttributes.addFlashAttribute("result", "글 작성에 실패했습니다");
-        	return "redirect:/";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
 
         redirectAttributes.addFlashAttribute("result", "글 작성에 성공했습니다");
-        return "redirect:/";
+        return Util.RedirectFinalURL(httpServletRequest);
     }
 
     @PostMapping("/notice-delete")
-    public String NoticeDelete(@RequestParam int idx, RedirectAttributes redirectAttributes) {
+    public String NoticeDelete(@RequestParam("idx") int idx,
+                                RedirectAttributes redirectAttributes,
+                                HttpServletRequest httpServletRequest) {
         if(idx == 0)
         {
             redirectAttributes.addFlashAttribute("result", "정보가 올바르지 않습니다");
-        	return "redirect:/";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
 
         int queryCount = noticeService.noticeDelete(idx);
@@ -63,19 +69,22 @@ public class NoticeController {
         if(queryCount == 0)
         {
             redirectAttributes.addFlashAttribute("result", "글 삭제에 실패했습니다");
-        	return "redirect:/";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
 
+        Util.ResetFinalURL(httpServletRequest, "/");
         redirectAttributes.addFlashAttribute("result", "글 삭제에 성공했습니다");
-        return "redirect:/";
+        return Util.RedirectFinalURL(httpServletRequest);
     }
 
     @PostMapping("/notice-modify")
-    public String NoticeModify(@ModelAttribute Notice notice, RedirectAttributes redirectAttributes) {
+    public String NoticeModify(@ModelAttribute Notice notice, 
+                                RedirectAttributes redirectAttributes,
+                                HttpServletRequest httpServletRequest) {
         if(notice == null)
         {
             redirectAttributes.addFlashAttribute("result", "글 정보가 올바르지 않습니다");
-        	return "redirect:/";
+            return Util.RedirectFinalURL(httpServletRequest);
         }
 
         int queryCount = noticeService.noticeUpdate(notice);
@@ -83,15 +92,20 @@ public class NoticeController {
         if(queryCount == 0)
         {
             redirectAttributes.addFlashAttribute("result", "글 수정에 실패했습니다");
-        	return "redirect:/";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
         
         redirectAttributes.addFlashAttribute("result", "글 수정에 성공했습니다");
-        return "redirect:/";
+        return Util.RedirectFinalURL(httpServletRequest);
     }
 
     @PostMapping("/notice-vote")
-    public String NoticeVote(@RequestParam int idx, @RequestParam String voteType, RedirectAttributes redirectAttributes, Authentication authentication, Model model) {
+    public String NoticeVote(@RequestParam("idx") int idx,
+                             @RequestParam("voteType") String voteType,
+                              HttpServletRequest httpServletRequest,
+                              RedirectAttributes redirectAttributes, 
+                              Authentication authentication, 
+                              Model model) {
         if(authentication == null || !authentication.isAuthenticated())
         {
             redirectAttributes.addFlashAttribute("result", "회원 전용 기능입니다");
@@ -136,7 +150,7 @@ public class NoticeController {
                 noticeVote.setVoteType("up");
                 noticeVoteService.insertNoticeVote(noticeVote);
                 redirectAttributes.addFlashAttribute("result", "좋아요에 성공했습니다");
-        	    return "redirect:/";
+                return Util.PageRefresh(httpServletRequest);
             }
         }
         else if("down".equals(voteType))
@@ -155,7 +169,7 @@ public class NoticeController {
                 noticeVote.setVoteType("down");
                 noticeVoteService.insertNoticeVote(noticeVote);
                 redirectAttributes.addFlashAttribute("result", "싫어요에 성공했습니다");
-        	    return "redirect:/";
+        	    return Util.PageRefresh(httpServletRequest);
             }
         }
         else

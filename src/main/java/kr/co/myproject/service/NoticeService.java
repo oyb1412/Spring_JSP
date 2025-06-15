@@ -20,7 +20,7 @@ public class NoticeService {
 		return noticeMapper.noticeInsert(notice);
 	}
 
-	public List<Notice> getPagedList(int start, int pageSize){
+	public List<Notice> getPagedList(@Param("start") int start, @Param("pageSize") int pageSize){
 		return noticeMapper.getPagedList(start, pageSize);
 	}
 	
@@ -57,6 +57,16 @@ public class NoticeService {
 	public Notice findNotice(int idx)
 	{
 		return noticeMapper.findNotice(idx);
+	}
+
+	public int plusNoticeCommentCount(int idx)
+	{
+		return noticeMapper.plusNoticeCommentCount(idx);
+	}
+
+	public int downNoticeCommentCount(int idx)
+	{
+		return noticeMapper.downNoticeCommentCount(idx);
 	}
 
 	public List<Notice> searchNoticeListPaged(@Param("searchType") String searchType,

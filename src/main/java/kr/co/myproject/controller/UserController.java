@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,10 +12,13 @@ import kr.co.myproject.entity.Role;
 import kr.co.myproject.entity.User;
 import kr.co.myproject.service.UserService;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 
@@ -29,7 +33,9 @@ public class UserController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@PostMapping("/register")
-	public String register(@ModelAttribute User user,  RedirectAttributes redirectAttributes,Model model) {
+	public String register(@ModelAttribute User user,  
+							RedirectAttributes redirectAttributes,
+							Model model) {
 		if(user == null)
 		{
 			redirectAttributes.addFlashAttribute("result", "유저 정보가 올바르지 않습니다");
@@ -121,7 +127,9 @@ public class UserController {
 	}
 
 	@PostMapping("/find-password")
-	public String findPassword(@RequestParam String username, @RequestParam String password, @RequestParam String passwordConfirm, RedirectAttributes redirectAttributes) {
+	public String findPassword(@RequestParam("username") String username, 
+							   @RequestParam("password") String password, 
+							   @RequestParam("passwordConfirm") String passwordConfirm, RedirectAttributes redirectAttributes) {
 		if((username == null || username.isEmpty()) ||
 		(password == null || password.isEmpty()) ||
 		(passwordConfirm == null || passwordConfirm.isEmpty()))
@@ -159,8 +167,8 @@ public class UserController {
 	}
 
 	@PostMapping("/admin-ban")
-	public String adminBan(@RequestParam int userIdx,
-						   @RequestParam boolean ban,
+	public String adminBan(@RequestParam("userIdx") int userIdx,
+						   @RequestParam("ban") boolean ban,
 						   RedirectAttributes redirectAttributes) {
 		User user = userService.findByIdx(userIdx);
 
@@ -196,6 +204,28 @@ public class UserController {
 		}
 							
 		return "redirect:/admin-page";
+	}
+	
+	@PostMapping("/withdrawal")
+	public String userWithdrawal(RedirectAttributes redirectAttributes, Authentication authentication) {
+		int userIdx = userService.findByUsername(authentication.getName()).getIdx();
+		
+		if(userIdx == 0)
+		{
+			redirectAttributes.addFlashAttribute("result", "유저 정보가 올바르지 않습니다");
+			return "redirect:/";
+		}
+
+		int queryCount = userService.Withdrawal(userIdx);
+
+		if(queryCount == 0)
+		{
+			redirectAttributes.addFlashAttribute("result", "회원 탈퇴에 실패했습니다");
+			return "redirect:/";
+		}
+
+		redirectAttributes.addFlashAttribute("result", "회원 탈퇴에 성공했습니다");
+		return "redirect:/logout";
 	}
 	
 }

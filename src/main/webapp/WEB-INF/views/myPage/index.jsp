@@ -33,6 +33,10 @@
     <form action="${pageContext.request.contextPath}/" method="get">
       <button type="submit" class="register-button">취소</button>
     </form>
+
+    <div id="register-link" style="text-align : center;">
+      <a href="${pageContext.request.contextPath}/withdrawal-page">회원탈퇴</a>
+    </div>
     
   </div>
 </div>

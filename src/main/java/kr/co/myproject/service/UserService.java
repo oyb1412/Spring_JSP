@@ -63,4 +63,9 @@ public class UserService {
 	{
 		return userMapper.UpdateBan(ban, idx);
 	}
+
+	public int Withdrawal(int idx)
+	{
+		return userMapper.Withdrawal(idx);
+	}
 }

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
+import kr.co.myproject.Util.Util;
 import kr.co.myproject.entity.Projects;
 import kr.co.myproject.entity.Resume;
 import kr.co.myproject.service.ProjectsService;
@@ -28,9 +30,6 @@ public class DummyController {
 
     @Autowired
     private ProjectsService projectsService;
-
-    
-	private final Logger logger = LoggerFactory.getLogger(PageController.class);
 
     @GetMapping("/dummy-board-add-page")
     public String DummyBoardAddPage() {
@@ -48,24 +47,30 @@ public class DummyController {
     }
     
     @GetMapping("/resume-board-check-page")
-    public String ResumeBoardCheckPage(Model model) {
+    public String ResumeBoardCheckPage(Model model,
+                                       HttpServletRequest httpServletRequest) {
         Resume resume = resumeService.SelectResume(2);
         model.addAttribute("resume", resume);
+        Util.SaveFinalURL(httpServletRequest);
         return "resumeBoardCheck/index";
     }
 
     @GetMapping("/projects-board-list-page")
-    public String ProjectsBoardListPage(Model model) {
+    public String ProjectsBoardListPage(Model model,
+                                        HttpServletRequest httpServletRequest) {
         List<Projects> projectsList = projectsService.SelectProjects();
         model.addAttribute("projectsList", projectsList);
+        Util.SaveFinalURL(httpServletRequest);
         return "ProjectsBoardList/index";
     }
 
     @GetMapping("/projects-board-check-page")
-    public String ProjectsBoardCheckPage(@RequestParam int idx,
+    public String ProjectsBoardCheckPage(@RequestParam("idx") int idx,
+                                          HttpServletRequest httpServletRequest,
                                           Model model) {
         Projects projects = projectsService.SelectProjectsByIdx(idx);
         model.addAttribute("projects", projects);
+        Util.SaveFinalURL(httpServletRequest);
         return "ProjectsBoardCheck/index";
     }
 

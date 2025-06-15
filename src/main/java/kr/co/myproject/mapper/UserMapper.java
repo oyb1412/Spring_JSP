@@ -2,8 +2,10 @@ package kr.co.myproject.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -40,5 +42,8 @@ public interface UserMapper {
 	public int UpdatePassword(User user);
 
 	@Update("UPDATE springboot_project_study.user SET ban = #{ban} WHERE idx =#{idx}")
-	public int UpdateBan(boolean ban, int idx);
+	public int UpdateBan(@Param("ban") boolean ban,@Param("idx")  int idx);
+
+	@Delete("DELETE FROM springboot_project_study.user WHERE idx=#{idx}")
+	public int Withdrawal(int idx);
 }

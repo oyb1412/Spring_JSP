@@ -1,0 +1,16 @@
+{
+  "type": "java",
+  "name": "Launch Spring Boot",
+  "request": "launch",
+  "mainClass": "kr.co.myproject.SpringProjectApplication",
+  "vmArgs": "-parameters",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "SpringProjectApplication",
+      "request": "launch",
+      "mainClass": "kr.co.myproject.SpringProjectApplication",
+      "projectName": "Spring_JSP"
+    }
+  ]
+}

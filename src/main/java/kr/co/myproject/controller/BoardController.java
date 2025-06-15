@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 
+import kr.co.myproject.Util.Util;
 import kr.co.myproject.entity.Board;
 import kr.co.myproject.entity.BoardReport;
 import kr.co.myproject.entity.BoardReported;
@@ -25,7 +26,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.GetMapping;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 
 
@@ -53,24 +55,27 @@ public class BoardController {
 
 
     @PostMapping("/board-add")
-    public String BoardAdd(@ModelAttribute Board board,  RedirectAttributes redirectAttributes,Authentication authentication) {
+    public String BoardAdd(@ModelAttribute Board board,  
+                            RedirectAttributes redirectAttributes,
+                            Authentication authentication,
+                            HttpServletRequest httpServletRequest) {
         if(authentication == null || !authentication.isAuthenticated())
         {
             redirectAttributes.addFlashAttribute("result", "회원 전용 기능입니다");
-        	return "redirect:/board-list-page";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
 
         if(board == null)
         {
             redirectAttributes.addFlashAttribute("result", "글 정보가 올바르지 않습니다");
-        	return "redirect:/board-list-page";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
 
         if((board.getTitle() == null || board.getTitle().isEmpty())||
         (board.getContent() == null || board.getContent().isEmpty()))
         {
             redirectAttributes.addFlashAttribute("result", "제목과 내용을 모두 작성해 주세요");
-        	return "redirect:/board-list-page";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
 
         User user = userService.findByUsername(authentication.getName());
@@ -80,19 +85,21 @@ public class BoardController {
         if(queryCount == 0)
         {
             redirectAttributes.addFlashAttribute("result", "글 작성에 실패했습니다");
-        	return "redirect:/board-list-page";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
         
         redirectAttributes.addFlashAttribute("result", "글 작성에 성공했습니다");
-        return "redirect:/board-list-page";
+        return Util.RedirectFinalURL(httpServletRequest);
     }
 
     @PostMapping("/board-delete")
-    public String BoardDelete(@RequestParam int idx,  RedirectAttributes redirectAttributes) {
+    public String BoardDelete(@RequestParam("idx") int idx, 
+                               RedirectAttributes redirectAttributes,
+                               HttpServletRequest httpServletRequest) {
         if(idx == 0)
         {
             redirectAttributes.addFlashAttribute("result", "글 정보가 올바르지 않습니다");
-        	return "redirect:/board-list-page";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
 
         int queryCount = boardService.boardDelete(idx);
@@ -100,26 +107,30 @@ public class BoardController {
         if(queryCount == 0)
         {
             redirectAttributes.addFlashAttribute("result", "글 삭제에 실패했습니다");
-        	return "redirect:/board-list-page";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
 
+        Util.ResetFinalURL(httpServletRequest, "/board-list-page");
+
         redirectAttributes.addFlashAttribute("result", "글 삭제에 성공했습니다");
-        return "redirect:/board-list-page";
+        return Util.RedirectFinalURL(httpServletRequest);
     }
 
     @PostMapping("/board-modify")
-    public String BoardModify(@ModelAttribute Board board,  RedirectAttributes redirectAttributes) {
+    public String BoardModify(@ModelAttribute Board board, 
+                               RedirectAttributes redirectAttributes,
+                               HttpServletRequest httpServletRequest) {
         if(board == null)
         {
             redirectAttributes.addFlashAttribute("result", "글 정보가 올바르지 않습니다");
-        	return "redirect:/board-list-page";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
 
         if((board.getTitle() == null || board.getTitle().isEmpty())||
         (board.getContent() == null || board.getContent().isEmpty()))
         {
             redirectAttributes.addFlashAttribute("result", "제목과 내용을 모두 작성해 주세요");
-        	return "redirect:/board-list-page";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
 
         int queryCount = boardService.boardUpdate(board);
@@ -127,15 +138,20 @@ public class BoardController {
         if(queryCount == 0)
         {
             redirectAttributes.addFlashAttribute("result", "글 수정에 실패했습니다");
-        	return "redirect:/board-list-page";
+        	return Util.RedirectFinalURL(httpServletRequest);
         }
 
         redirectAttributes.addFlashAttribute("result", "글 수정에 성공했습니다");
-        return "redirect:/board-list-page";
+        return Util.RedirectFinalURL(httpServletRequest);
     }
 
     @PostMapping("/board-vote")
-    public String BoardVote(@RequestParam int idx, @RequestParam String voteType, RedirectAttributes redirectAttributes, Authentication authentication, Model model) {
+    public String BoardVote(@RequestParam("idx") int idx,
+                            @RequestParam("voteType") String voteType, 
+                            HttpServletRequest httpServletRequest,
+                            RedirectAttributes redirectAttributes, 
+                            Authentication authentication, 
+                            Model model) {
         if(authentication == null || !authentication.isAuthenticated())
         {
             redirectAttributes.addFlashAttribute("result", "회원 전용 기능입니다");
@@ -179,7 +195,7 @@ public class BoardController {
                 boardVote.setVoteType("up");
                 boardVoteService.insertBoardVote(boardVote);
                 redirectAttributes.addFlashAttribute("result", "좋아요에 성공했습니다");
-        	    return "redirect:/board-list-page";
+                return Util.PageRefresh(httpServletRequest);
             }
         }
         else if("down".equals(voteType))
@@ -198,7 +214,7 @@ public class BoardController {
                 boardVote.setVoteType("down");
                 boardVoteService.insertBoardVote(boardVote);
                 redirectAttributes.addFlashAttribute("result", "싫어요에 성공했습니다");
-        	    return "redirect:/board-list-page";
+        	    return Util.PageRefresh(httpServletRequest);
             }
         }
         else
@@ -211,11 +227,11 @@ public class BoardController {
     }
 
     @PostMapping("/board-report")
-        public String BoardReport(@RequestParam int boardIdx,
-                                  @RequestParam int reportedUserIdx,
-                                  @RequestParam int userIdx,
-                                  @RequestParam ReportType reportType,
-                                  @RequestParam String reportContent,
+        public String BoardReport(@RequestParam("boardIdx") int boardIdx,
+                                  @RequestParam("reportedUserIdx") int reportedUserIdx,
+                                  @RequestParam("userIdx") int userIdx,
+                                  @RequestParam("reportType") ReportType reportType,
+                                  @RequestParam("reportContent") String reportContent,
                                   RedirectAttributes redirectAttributes)
         {
             BoardReport boardReport = new BoardReport();

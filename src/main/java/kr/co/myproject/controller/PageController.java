@@ -12,9 +12,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
+import kr.co.myproject.Util.Util;
 import kr.co.myproject.entity.Board;
 import kr.co.myproject.entity.BoardType;
 import kr.co.myproject.entity.Comment;
@@ -50,11 +53,12 @@ public class PageController {
 
 	
 	@GetMapping("/board-list-page")
-	public String boardList(@RequestParam(defaultValue = "1") int page,
-							@RequestParam(required = false) String searchType,
-							@RequestParam(required = false) String keyword,
-							@RequestParam(required = false) String sortField,
-							@RequestParam(required = false) String sortOrder,
+	public String boardList(@RequestParam(name="page", defaultValue = "1") int page,
+							@RequestParam(name="searchType",required = false) String searchType,
+							@RequestParam(name="keyword",required = false) String keyword,
+							@RequestParam(name="sortField",required = false) String sortField,
+							@RequestParam(name="sortOrder",required = false) String sortOrder,
+							HttpServletRequest httpServletRequest,
 							Model model)
 	{
 		int pageSize = 10;
@@ -127,20 +131,21 @@ public class PageController {
 		boardList = boardList.subList(startIndex, endIndex);
 
     	int totalPage = (int) Math.ceil((double) totalCount / pageSize);
-		logger.info("totalPage : "+ totalPage);
     	model.addAttribute("boardList", boardList);
     	model.addAttribute("currentBoardPage", page);
     	model.addAttribute("totalBoardPage", totalPage);
     	model.addAttribute("searchType", searchType);
     	model.addAttribute("keyword", keyword);
+		Util.SaveFinalURL(httpServletRequest);
 
     	return "boardList/index";
 	}
 
 	@GetMapping("/")
-	public String noticeList(@RequestParam(defaultValue = "1") int page, 
-							@RequestParam(required = false) String searchType, 
-							@RequestParam(required = false) String keyword,
+	public String noticeList(@RequestParam(name="page", defaultValue = "1") int page, 
+							@RequestParam(name="searchType", required = false) String searchType, 
+							@RequestParam(name="keyword", required = false) String keyword,
+							HttpServletRequest httpServletRequest,
 							Model model)
 	{
 		int pageSize = 10;
@@ -169,6 +174,8 @@ public class PageController {
 		model.addAttribute("totalNoticePage", totalPage);
 		model.addAttribute("searchType", searchType);
     	model.addAttribute("keyword", keyword);
+		logger.info("1");
+		Util.SaveFinalURL(httpServletRequest);
 
 		return "noticeList/index";
 	}
@@ -217,7 +224,11 @@ public class PageController {
 	}	
 	
 	@GetMapping("/board-check-page")
-	public String boardCheckPage(@RequestParam("idx") int idx, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
+	public String boardCheckPage(@RequestParam("idx") int idx,
+								  Model model, 
+								  Authentication authentication, 
+								  RedirectAttributes redirectAttributes,
+								  HttpServletRequest httpServletRequest) {
 		Board board = boardService.findBoard(idx);
 		model.addAttribute("board", board);
 		int queryCount = boardService.plusBoardViewCount(idx);
@@ -235,7 +246,7 @@ public class PageController {
         	User user = userService.findByUsername(username); 
         	model.addAttribute("writer", user.getWriter());
 		}
-		
+		Util.SaveFinalURL(httpServletRequest);
 		model.addAttribute("comments", comments);
 		return "boardCheck/index";
 	}
@@ -275,7 +286,7 @@ public class PageController {
 	}	
 	
 	@GetMapping("/notice-check-page")
-	public String noticeCheckPage(@RequestParam("idx") int idx, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
+	public String noticeCheckPage(@RequestParam("idx") int idx, HttpServletRequest httpServletRequest, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
 		Notice notice = noticeService.findNotice(idx);
 		model.addAttribute("notice", notice);
 		int queryCount = noticeService.plusNoticeViewCount(idx);
@@ -293,6 +304,8 @@ public class PageController {
         	User user = userService.findByUsername(username); 
         	model.addAttribute("writer", user.getWriter());
 		}
+
+		Util.SaveFinalURL(httpServletRequest);
 		
 		model.addAttribute("comments", comments);
 		return "noticeCheck/index";
@@ -339,10 +352,10 @@ public class PageController {
 	}
 
 	@GetMapping("/board-report-page")
-	public String reportPage(@RequestParam int boardIdx, 
-								@RequestParam int reportedUserIdx,
-								@RequestParam String writer,
-								@RequestParam String title,
+	public String reportPage(@RequestParam("boardIdx") int boardIdx, 
+								@RequestParam("reportedUserIdx") int reportedUserIdx,
+								@RequestParam("writer") String writer,
+								@RequestParam("title") String title,
 								Authentication authentication, 
 								RedirectAttributes redirectAttributes, 
 								Model model) {
@@ -381,6 +394,15 @@ public class PageController {
 		List<User> allUser = userService.findAllUser();
 		model.addAttribute("userList", allUser);
 		return "admin/index";
+	}
+	
+	@GetMapping("/withdrawal-page")
+	public String getMethodName(Authentication authentication,
+								Model model) {
+		User user = userService.findByUsername(authentication.getName());
+	    model.addAttribute("user", user);
+
+		return "withdrawal/index";
 	}
 	
 }

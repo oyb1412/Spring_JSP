@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -25,6 +27,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import kr.co.myproject.Util.Util;
 
 @Configuration
 @EnableWebSecurity
@@ -68,14 +71,32 @@ public class SecutiryConfig {
 		 )
 		 .logout(logout -> logout
 				 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-				 .logoutSuccessUrl("/")
-				 .invalidateHttpSession(true)
+				 .logoutSuccessHandler(logoutSuccessHandler())
+				 .invalidateHttpSession(false)
 				 .deleteCookies("JSESSIONID")
 				 .permitAll()
 				 );
 		 
 		 return http.build();
 	}
+
+	public LogoutSuccessHandler logoutSuccessHandler() {
+    return new SimpleUrlLogoutSuccessHandler() {
+        @Override
+        public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+                throws IOException, ServletException {
+
+			String finalUrl = Util.GetFinalURL(request);
+
+			HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.invalidate(); // 세션 날리기
+            }
+
+			response.sendRedirect(request.getContextPath() + finalUrl);
+        }
+    };
+}
 	
 	
 
@@ -104,7 +125,7 @@ public class SecutiryConfig {
 				session.setAttribute("username", authentication.getName());
 				session.setAttribute("isAuthenticated", true);
 				
-				response.sendRedirect(request.getContextPath() + "/");
+				response.sendRedirect(request.getContextPath() + Util.GetFinalURL(request));
 				
 				super.onAuthenticationSuccess(request, response, authentication);
 			}
@@ -114,7 +135,7 @@ public class SecutiryConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
-		corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:8081", "https://localhost:8081"));
+		corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "https://localhost:8080"));
 		corsConfiguration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
 		corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
 		

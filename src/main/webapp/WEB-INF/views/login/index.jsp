@@ -8,16 +8,7 @@
 <div id="main-content">
   <div id="login-container">
     <h2>로그인</h2>
-    <c:if test="${param.error == 'true'}">
-      <p class="login-error">아이디 혹은 비밀번호가 올바르지 않습니다</p>
-    </c:if>
-
-    <c:if test="${param.error == 'ban'}">
-      <p class="login-error">운영자에게 정지당한 계정입니다</p>
-    </c:if>
-	<c:if test="${not empty error}">
-  		<p style="color:red;">${error}</p>
-	</c:if>
+    
     
     <form action="${pageContext.request.contextPath}/login" method="post">
       <input type="hidden" name="_csrf" value="${_csrf.token}" />

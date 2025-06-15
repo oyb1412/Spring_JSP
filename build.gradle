@@ -28,6 +28,7 @@ configurations {
 	}
 }
 
+
 repositories {
 	mavenCentral()
 }
@@ -55,4 +56,9 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters"
 }
